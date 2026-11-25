@@ -12,7 +12,8 @@ Todos os repos abaixo foram clonados/baixados e lidos. Nenhum código foi copiad
 | `ThatRecompDev/five-star-recomp` | Referência de fallback de mesh | Contrato `MeshComputeFallback`: CS `u0` records, `u1` triangle list, `u2` argumentos `DrawIndexed`; VS `t0` lê records; `DispatchMesh` → `Dispatch` + barreira + `ExecuteIndirect`. Base do plano em `F:\GTAVI-Build\gta5700\repos\victory-fork\docs\fork-mesh-fallback.md`. |
 | `OpenCommunityEdition/OpenScarlett` | Referência | Clonado em `F:\GTAVI-Build\gta5700\refs\OpenScarlett` para estudo de HLE/formato; nada portado ainda. |
 | `Freminet/ScarlettX` | Referência | Clonado em `F:\GTAVI-Build\gta5700\refs\ScarlettX`; nada portado ainda. |
-| `R0Y00/Xbox2Windows` | Referência | Clonado em `F:\GTAVI-Build\gta5700\refs\Xbox2Windows`; confirmou soft asserts `int3` e `-ContinueAsserts`. |
+| `R0Y00/Xbox2Windows` | Referência | Clonado em `refs/Xbox2Windows`; confirmou soft asserts `int3` e `-ContinueAsserts`. |
+| `ZigZagBoi1/ScarlettPort` | Referência avançada (RTX 3060) | Runtime VIctory-based com `victory warm` (3 min) + `precompile-graphics` (8 min), 25.200 pipelines pré-feitas, `press.txt` ao vivo (`VICTORY_PRESS_FILE`), `VICTORY_FAST_BOOT`, `VICTORY_NO_WATCHDOG`, `VICTORY_SYNC_PRECISE`, `VICTORY_READ_SETTLE_PRECISE`, `VICTORY_OWN_UPSCALER`, patches em diffs. **Portado**: `press.txt` (`live_press`) para o nosso fork. Clonado em `refs/ScarlettPort`. |
 
 ## O que foi portado de fato
 

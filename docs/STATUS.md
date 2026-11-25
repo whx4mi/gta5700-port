@@ -19,6 +19,18 @@ Baseline de testes: **695 passed / 4 failed / 21 ignored**. As 4 falhas (FMA, 3 
 - WARP com resolu��o reduzida (`VICTORY_DISPLAY_MODE=1280x720`) e `VICTORY_SHADER_LOOP_LIMIT=64`: 30 fps, mas imagem preta (loops truncados). `4096` tamb�m preto. N�o usar.
 - `--console series-s` em hardware: tela preta. N�o usar.
 
+## Descoberta importante: cache frio vs cache quente (25 Nov)
+
+- Capturas com caches novos (`victory-cache-mesh`, `-nocaps`, `-warpvalid`) mostraram **intro toda escura**.
+- Com o cache aquecido (`runs\victory-cache`, 0,61 GB, gerado pelos primeiros runs) a intro e as ilustrações com personagens renderizam corretamente ( murais, flamingo, personagens).
+- Ou seja: a "instabilidade da tela inicial" era **pipeline/shader cache frio**, não o fallback de mesh nem os caps de VRAM. Usar sempre `VICTORY_CACHE_DIR=runs\victory-cache`.
+- `VICTORY_TEXTURE_BUDGET_MB=1024` e afins não afetam a intro; são só para estabilidade do mundo.
+
+## Port de `press.txt` do ScarlettPort
+
+- `VICTORY_PRESS_FILE=<path>`: escrever `A`, `DOWN DOWN A` etc. no arquivo pressiona as teclas em sequência (150 ms por botão, 1,5 s para sticks) e esvazia o arquivo. Portado de `refs\ScarlettPort\runtime\victory\crates\victory-hle\src\modules\gameinput.rs` para `repos\victory-fork`. Build diag OK.
+- Uso: defina `VICTORY_PRESS_FILE` e escreva os botantes no arquivo enquanto o jogo roda — resolve a navegação dos Avisos Legais/Termos sem depender de timing cego.
+
 ## Falhas conhecidas
 
 - `0x887a0004` / `0x887a0001` no fork sem caps de VRAM: SM6.6/mesh n�o suportado na RDNA1.
