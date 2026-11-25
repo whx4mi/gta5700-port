@@ -132,6 +132,12 @@ pub(crate) struct Translated {
 impl Shader {
     /// The translation, made on first use; a shader that does not
     /// translate is logged once.
+    /// The container as the title gave it (with the ISG1/OSG1/PSV0 parts a
+    /// pass-through vertex shader needs), not the translated DXIL.
+    pub(crate) fn container(&self) -> &[u8] {
+        &self.container
+    }
+
     pub(crate) fn translated(&self) -> Option<&Translated> {
         self.translated
             .get_or_init(|| {

@@ -586,8 +586,10 @@ impl HostPipeline {
             // Pass B: a VS pass-through reads its records; it is generated
             // from the paired pixel shader's input signature so it links.
             let ms = mesh.expect("fallback has a mesh shader");
-            let ps_dxil = find("pixel").and_then(|s| s.translated()).map(|t| t.host.dxil.as_slice());
-            let vs_dxil = match victory_shader::emit::passthrough_vs(&ms.translated()?.host, ps_dxil.unwrap_or(&[])) {
+            // The original container carries the PS's ISG1 input signature;
+            // the translated DXIL no longer has those parts.
+            let ps_container = find("pixel").map(|s| s.container()).unwrap_or(&[]);
+            let vs_dxil = match victory_shader::emit::passthrough_vs(&ms.translated()?.host, ps_container) {
                 Ok(dxil) => dxil,
                 Err(e) => {
                     tracing::warn!(error = %e, ?shaders, "no pass-through vertex shader for the mesh fallback");

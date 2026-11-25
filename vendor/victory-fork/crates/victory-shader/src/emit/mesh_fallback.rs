@@ -352,10 +352,33 @@ pub fn passthrough_vs(mesh: &super::HostShader, ps: &[u8]) -> Result<Vec<u8>, Sh
         offset: 0,
         what: "a mesh shader without a fallback layout",
     })?;
-    let container = Container::parse(ps)?;
-    let mut outputs = match container.part(FourCC::ISG1) {
-        Some(part) => super::signature(part.data)?,
-        None => Vec::new(),
+    // The PS's original container carries ISG1 when the title supplied one;
+    // many console pixel shaders have no DXBC container at all. In that case
+    // use the mesh program's own ranked outputs, which is what the console
+    // driver links to the PS by register (the XCL fallback does the same).
+    let from_mesh = || {
+        ranked(&fallback.outputs)
+            .into_iter()
+            .map(|o| SigElement {
+                name: o.name.clone(),
+                index: o.index,
+                kind: o.system_value,
+                comp: o.component_type,
+                interp: 0,
+                row: Some(o.row),
+                col: 0,
+                cols: o.components.min(4),
+                usage: 0xF,
+                half: false,
+            })
+            .collect()
+    };
+    let mut outputs = match Container::parse(ps).ok() {
+        Some(c) => match c.part(FourCC::ISG1) {
+            Some(part) => super::signature(part.data)?,
+            None => from_mesh(),
+        },
+        None => from_mesh(),
     };
     // A vertex shader must write a position, even when the pixel shader
     // declares none. Put it in row 0 and move the other rows up: D3D12 links
