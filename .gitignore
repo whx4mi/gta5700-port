@@ -1,0 +1,27 @@
+# Dados gerados / pesados — nunca versionar
+build/
+cache/
+runs/
+backups/
+
+# Repos de trabalho locais (historico/branch) — o codigo publico esta em vendor/
+repos/
+refs/
+
+# Build artifacts dentro dos repos
+repos/*/target/
+repos/*/logs/
+repos/*/overlay/
+repos/*/saves/
+repos/*/temp/
+
+# Config local com caminhos absolutos da máquina
+repos/victory-fork/victory.toml
+
+# Temporários
+*.tmp
+*.log
+*.bmp
+*.png
+Thumbs.db
+desktop.ini
