@@ -2,7 +2,8 @@
   [string]$Nome = "fork",
   [int]$Segundos = 400,
   [switch]$Warp,
-  [string]$Keys = ''
+  [string]$Keys = '',
+  [switch]$SemWatchdog
 )
 
 $me = $PID
@@ -17,10 +18,12 @@ $data = "F:\GTAVI-Build\gta5700\runs\victory-data-$Nome"
 $capture = "F:\GTAVI-Build\gta5700\runs\victory-capture-$Nome"
 New-Item -ItemType Directory -Force -Path $cache,$data,$capture | Out-Null
 
-Start-Process -FilePath powershell -ArgumentList @(
-  '-ExecutionPolicy','Bypass','-File','F:\GTAVI-Build\gta5700\tools\victory_watchdog.ps1',
-  '-Seconds',($Segundos + 20)
-) -WindowStyle Hidden | Out-Null
+if (-not $SemWatchdog) {
+  Start-Process -FilePath powershell -ArgumentList @(
+    '-ExecutionPolicy','Bypass','-File','F:\GTAVI-Build\gta5700\tools\victory_watchdog.ps1',
+    '-Seconds',($Segundos + 20)
+  ) -WindowStyle Hidden | Out-Null
+}
 
 $env:VICTORY_CACHE_DIR = $cache
 $env:VICTORY_DATA_DIR = $data
@@ -38,5 +41,5 @@ $game = "F:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\game_scarlett_master.exe"
 
 "Fork: $exe"
 "Cache: $cache | Data: $data | Captura: $capture"
-"WARP: $([bool]$Warp) | VICTORY_KEYS: $Keys"
+"WARP: $([bool]$Warp) | VICTORY_KEYS: $Keys | Watchdog: $(-not $SemWatchdog)"
 & $exe run $game --execute

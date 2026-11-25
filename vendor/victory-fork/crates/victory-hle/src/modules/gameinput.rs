@@ -1176,6 +1176,7 @@ mod host {
                     .collect();
                 down.extend(held);
             }
+            live_press(&mut down);
             down.into_iter()
                 .map(|vk| KeyState {
                     // SAFETY: plain query.
@@ -1195,6 +1196,63 @@ mod host {
             };
             // SAFETY: a valid vibration; an empty slot just fails.
             unsafe { XInputSetState(slot as u32, &speeds) };
+        }
+    }
+
+    /// `VICTORY_PRESS_FILE=<path>`: button names written to that file are
+    /// pressed one after another (150 ms each, 1.5 s for stick tokens), then
+    /// the file is emptied. Ported from ScarlettPort's live input so the
+    /// first-boot screens can be navigated while the title runs.
+    fn live_press(keys: &mut Vec<u8>) {
+        static PATH: LazyLock<Option<String>> =
+            LazyLock::new(|| std::env::var("VICTORY_PRESS_FILE").ok());
+        static Q: Mutex<(Option<Instant>, Vec<u8>, Option<Instant>)> =
+            Mutex::new((None, Vec::new(), None));
+        let Some(path) = PATH.as_ref() else { return };
+        let mut q = Q.lock().unwrap_or_else(|e| e.into_inner());
+        let now = Instant::now();
+        if q.1.is_empty() && q.0.is_none_or(|t| now - t >= Duration::from_millis(50)) {
+            q.0 = Some(now);
+            if let Ok(s) = std::fs::read_to_string(path) {
+                if !s.trim().is_empty() {
+                    let _ = std::fs::write(path, "");
+                    q.1 = s
+                        .split_whitespace()
+                        .rev()
+                        .filter_map(|b| match b.to_ascii_uppercase().as_str() {
+                            "A" => Some(0x0D),
+                            "B" => Some(0x08),
+                            "UP" => Some(0x26),
+                            "DOWN" => Some(0x28),
+                            "LEFT" => Some(0x25),
+                            "RIGHT" => Some(0x27),
+                            "MENU" | "START" => Some(0x1B),
+                            "VIEW" => Some(0x09),
+                            "LS_UP" => Some(b'W'),
+                            "LS_DOWN" => Some(b'S'),
+                            "LS_LEFT" => Some(b'A'),
+                            "LS_RIGHT" => Some(b'D'),
+                            "RS_UP" => Some(b'I'),
+                            "RS_DOWN" => Some(b'K'),
+                            "RS_LEFT" => Some(b'J'),
+                            "RS_RIGHT" => Some(b'L'),
+                            "X" => Some(b'X'),
+                            "Y" => Some(b'Y'),
+                            _ => None,
+                        })
+                        .collect();
+                    q.2 = Some(now);
+                }
+            }
+        }
+        let Some(&vk) = q.1.last() else { return };
+        let held = q.2.map_or(Duration::ZERO, |t| now - t);
+        let hold = if b"WASDIJKL".contains(&vk) { 1500 } else { 150 };
+        if held < Duration::from_millis(hold) {
+            keys.push(vk);
+        } else if held >= Duration::from_millis(hold + 150) {
+            q.1.pop();
+            q.2 = Some(now);
         }
     }
 
