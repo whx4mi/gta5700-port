@@ -3,7 +3,8 @@
   [int]$Segundos = 400,
   [switch]$Warp,
   [string]$Keys = '',
-  [switch]$SemWatchdog
+  [switch]$SemWatchdog,
+  [string]$PressFile = ''
 )
 
 $me = $PID
@@ -35,6 +36,7 @@ $env:VICTORY_CARD_BUFFERS_MB = "256"
 $env:VICTORY_RELAY = "2"
 if ($Warp) { $env:VICTORY_D3D12_WARP = "1" }
 if ($Keys) { $env:VICTORY_KEYS = $Keys }
+if ($PressFile) { $env:VICTORY_PRESS_FILE = $PressFile; Set-Content -Path $PressFile -Value '' -NoNewline }
 
 $exe = "F:\GTAVI-Build\gta5700\repos\victory-fork\target\diag\victory.exe"
 $game = "F:\GTA6\GTA6.Xbox.v1.0.2.1-CYBERLEEK\game_scarlett_master.exe"
