@@ -344,7 +344,10 @@ pub(crate) static HEAP_TEXTURES_FULL: AtomicU64 = AtomicU64::new(0);
 
 /// Frames after a whole upload of a texture picked by index at which its
 /// memory is looked at again, each counted from the look before.
-const RECHECK_FRAMES: [u64; 5] = [4, 12, 40, 120, 400];
+// A animacao da intro (Bink) muda a cada frame; o primeiro recheck apos 4
+// frames deixava varias imagens antigas na tela ("one old picture after
+// another"). Com 1 frame o plano do filme e reenviado no proximo submit.
+const RECHECK_FRAMES: [u64; 5] = [1, 2, 4, 12, 40];
 
 /// Looks at uploaded textures picked by index that found the memory as it
 /// was, and that found it changed (uploaded again), since the start.

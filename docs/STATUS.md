@@ -41,6 +41,13 @@ Pré-compilação XCL: 22.333 compilados + 13.238 em cache, **19 erros de valida
 
 As pipelines compute recusadas com `0x80070057` aparecem em estágios mais profundos (não no menu). Estamos com debug layer ativo para capturar a mensagem exata do D3D12 — pendente de navegar até o loading.
 
+## Estado mais recente (25 Nov,-final)
+
+- Intro Bink **ainda travada** mesmo com 30 fps: `runs/cap-intro-hw` mostra frames escuros/estaticos; cache quente nao resolveu a animacao. Causa raiz documentada em `INTRO-BINK.md` (texturas de filme pulam hash no refresh); reduce `RECHECK_FRAMES` para `[1,2,4,12,40]` **nao** resolveu visualmente.
+- FPS: menus 30 fps estaveis; ao comecar o loading cai para **14 fps** e depois **7 fps** (`runs/fb3-err.txt`, `runs/fallback-err.txt`).
+- Fallback de mesh: corrigido o VS pass-through (usar container original do PS e outputs do mesh quando nao ha DXBC); build diag e testes passam; sem erros de `no pass-through` nem `fallback graphics pipeline refused` apos a correcao. Validacao em mundo ainda pendente.
+- `VICTORY_PRESS_FILE` portado do ScarlettPort: escrever `A`/`DOWN DOWN A` no arquivo pressiona os botoes; watchdog matou runs longos de navegacao.
+
 ## Falhas conhecidas
 
 - `0x887a0004` / `0x887a0001` no fork sem caps de VRAM: SM6.6/mesh n�o suportado na RDNA1.
