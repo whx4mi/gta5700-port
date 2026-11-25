@@ -31,6 +31,16 @@ Baseline de testes: **695 passed / 4 failed / 21 ignored**. As 4 falhas (FMA, 3 
 - `VICTORY_PRESS_FILE=<path>`: escrever `A`, `DOWN DOWN A` etc. no arquivo pressiona as teclas em sequência (150 ms por botão, 1,5 s para sticks) e esvazia o arquivo. Portado de `refs\ScarlettPort\runtime\victory\crates\victory-hle\src\modules\gameinput.rs` para `repos\victory-fork`. Build diag OK.
 - Uso: defina `VICTORY_PRESS_FILE` e escreva os botantes no arquivo enquanto o jogo roda — resolve a navegação dos Avisos Legais/Termos sem depender de timing cego.
 
+## Contagem de shaders / DXIL (25 Nov)
+
+`victory.exe shader-info shaders.rpf`: 26.503 containers, todos com DXIL e código nativo; Es 195, Gs 195, Vs 2.236, Ps 12.101, Ms 9.282, Cs 2.689; 26.698 programas decodificados.
+XCL `report.json` (`xbox_hw_stages`): CS 2.734, NGG 1.569, PS 3.297, VS 1.034.
+Pré-compilação XCL: 22.333 compilados + 13.238 em cache, **19 erros de validação (todos mesh `ms_6_6`)**, 390 GS pareados — ou seja, ~99,9% dos DXIL emitidos.
+
+**Com cache quente no hardware RX 5700**: menus a **30,0 fps**, 3→46 draws/frame, **0 pipelines dropadas e 0 tabelas recusadas**. A queda de FPS e a tela escura vinham de **cache frio**, não da placa em si.
+
+As pipelines compute recusadas com `0x80070057` aparecem em estágios mais profundos (não no menu). Estamos com debug layer ativo para capturar a mensagem exata do D3D12 — pendente de navegar até o loading.
+
 ## Falhas conhecidas
 
 - `0x887a0004` / `0x887a0001` no fork sem caps de VRAM: SM6.6/mesh n�o suportado na RDNA1.
